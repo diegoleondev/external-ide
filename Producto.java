@@ -1,4 +1,11 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 public class Producto implements Acciones, Serializable {
   private String identificador;
@@ -9,10 +16,6 @@ public class Producto implements Acciones, Serializable {
   private int stock = 0;
 
   private boolean eliminada = false;
-
-  private Id id = new Id();
-  private Leer leer = new Leer();
-  private Archivo archivo = new Archivo();
 
   public Producto() {
     capturar();
@@ -42,15 +45,120 @@ public class Producto implements Acciones, Serializable {
   }
 
   private void inicializar() {
-    identificador = id.alfanumerico();
+    identificador = alfanumerico();
   }
 
-  private String[] getCategorias() {
-    return archivo.getCadenas("./db/categorias.ponyfile");
+  private String alfanumerico() {
+    Random ran = new Random();
+
+    char[] banco = { 'a', 'b', 'c', 'x', 'y' };
+    StringBuilder clave = new StringBuilder();
+
+    for (int i = 1; i <= 5; i++) {
+      char caracter = banco[ran.nextInt(5)];
+
+      clave.append(caracter);
+      clave.append(ran.nextInt(10));
+    }
+
+    return clave.toString();
   }
+
+  private int leerInt() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        int valor = sc.nextInt();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private float leerFloat() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        float valor = sc.nextFloat();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número flotante : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private String leerString() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.nextLine();
+
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese una cadena de texto : ");
+      }
+    }
+  }
+
+  private int leerIntEnRango(int opciones) {
+    while (true) {
+
+      int opcion = leerInt() - 1;
+      boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
+
+      if (range)
+        return opcion;
+
+      System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
+    }
+  }
+
+  private String[] getCadenas(String path) {
+    BufferedReader bReader = null;
+
+    try {
+      FileReader file = new FileReader(path);
+      bReader = new BufferedReader(file);
+
+      List<String> lista = new ArrayList<String>();
+
+      String linea;
+
+      while ((linea = bReader.readLine()) != null)
+        lista.add(linea);
+
+      String[] areglo = new String[lista.size()];
+
+      lista.toArray(areglo);
+
+      return areglo;
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error, el archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error, no podemos leer el archivo. ");
+    } finally {
+      if (bReader == null)
+        return null;
+
+      try {
+        bReader.close();
+      } catch (Exception e) {
+        System.out.println("[!!] Ocurrió un error: no podemos cerrar el archivo : " + path);
+      }
+
+    }
+
+    return null;
+  };
 
   private String seleccionarCategoria() {
-    String[] CATEGORIAS = getCategorias();
+    String[] CATEGORIAS = getCadenas("db/categorias.ponyfile");
 
     System.out.println("\nCategorías : ");
     int i = 1;
@@ -61,7 +169,7 @@ public class Producto implements Acciones, Serializable {
     System.out.print("\nIndique la Categoría: ");
     int valor;
 
-    while ((valor = leer.unIntEnRango(CATEGORIAS.length)) == -1) {
+    while ((valor = leerIntEnRango(CATEGORIAS.length)) == -1) {
       System.out.print("No puede dejar este campo vacío, vuelva a seleccionar : ");
     }
 
@@ -87,7 +195,7 @@ public class Producto implements Acciones, Serializable {
       System.out.println("\n1) Nombre 2) Descripción 3) Precio");
       System.out.println("4) Categoría 5) Stock 0) Cancelar");
       System.out.print("Indique una opción : ");
-      int opcion = leer.unIntEnRango(5) + 1;
+      int opcion = leerIntEnRango(5) + 1;
 
       if (opcion == 0)
         return;
@@ -95,19 +203,19 @@ public class Producto implements Acciones, Serializable {
       System.out.print("Introduzca el nuevo valor : ");
       switch (opcion) {
         case 1:
-          nombre = leer.unString();
+          nombre = leerString();
           break;
         case 2:
-          descripcion = leer.unString();
+          descripcion = leerString();
           break;
         case 3:
-          precio = leer.unFloat();
+          precio = leerFloat();
           break;
         case 4:
           categoria = seleccionarCategoria();
           break;
         case 5:
-          stock = leer.unInt();
+          stock = leerInt();
           break;
       }
     }
@@ -115,13 +223,13 @@ public class Producto implements Acciones, Serializable {
 
   public void capturar() {
     System.out.print("Nombre : ");
-    nombre = leer.unString();
+    nombre = leerString();
 
     System.out.print("Descripción : ");
-    descripcion = leer.unString();
+    descripcion = leerString();
 
     System.out.print("Precio : ");
-    precio = leer.unFloat();
+    precio = leerFloat();
 
     categoria = seleccionarCategoria();
   }

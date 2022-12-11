@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Aplicacion {
 
     public static void main(String[] args) throws Exception {
@@ -119,14 +121,40 @@ public class Aplicacion {
         }
     }
 
-    public static int menu() throws Exception {
-        Leer leer = new Leer();
+    private static int leerInt() {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            try {
+                int valor = sc.nextInt();
+                sc.nextLine();
 
+                return valor;
+            } catch (Exception e) {
+                System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+                sc.nextLine();
+            }
+        }
+    }
+
+    private static int leerIntEnRango(int opciones) {
+        while (true) {
+
+            int opcion = leerInt() - 1;
+            boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
+
+            if (range)
+                return opcion;
+
+            System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
+        }
+    }
+
+    public static int menu() throws Exception {
         System.out.println("\n[#] Menú Principal");
         System.out.println("1) Cliente 2) Empleado 3) Proveedor 4) Producto 5) Venta 6) Compra 7) Categorías 0) Salir");
         System.out.print("Opción : ");
 
-        int opccion = (leer.unIntEnRango(7) + 1) * 10;
+        int opccion = (leerIntEnRango(7) + 1) * 10;
         if (opccion == 0)
             return 999;
 
@@ -134,7 +162,7 @@ public class Aplicacion {
         System.out.println("1) Mostrar 2) Agregar 3) Buscar 4) Modificar 5) Eliminar 0) Cancelar");
         System.out.print("Acción : ");
 
-        int accion = leer.unIntEnRango(5) + 1;
+        int accion = leerIntEnRango(5) + 1;
         if (accion == 0)
             return 888;
 

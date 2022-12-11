@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Empleado extends Persona {
   private String fechaAdmision;
   private String fechaNacimiento;
@@ -6,7 +8,6 @@ public class Empleado extends Persona {
   private String departamento;
   private String posicion;
   private float salario;
-  private Leer leer = new Leer();
 
   public Empleado() {
     super();
@@ -35,6 +36,72 @@ public class Empleado extends Persona {
     this.departamento = departamento;
     this.posicion = posicion;
     this.salario = salario;
+  }
+
+  private int leerInt() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        int valor = sc.nextInt();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private float leerFloat() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        float valor = sc.nextFloat();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número flotante : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private String leerString() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.nextLine();
+
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese una cadena de texto : ");
+      }
+    }
+  }
+
+  private char leerChar() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.next().charAt(0);
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un caracter : ");
+      }
+    }
+  }
+
+  private int leerIntEnRango(int opciones) {
+    while (true) {
+
+      int opcion = leerInt() - 1;
+      boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
+
+      if (range)
+        return opcion;
+
+      System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
+    }
   }
 
   @Override
@@ -71,7 +138,7 @@ public class Empleado extends Persona {
       System.out.println("9) Número de seguro social 10) Persona de contacto");
       System.out.println("11) Departamento 12) Posición 13) Salario 0) Cancelar");
       System.out.print("Indique una opción : ");
-      int opcion = leer.unIntEnRango(11) + 1;
+      int opcion = leerIntEnRango(11) + 1;
 
       if (opcion == 0)
         return;
@@ -79,43 +146,43 @@ public class Empleado extends Persona {
       System.out.print("Introduzca el nuevo valor : ");
       switch (opcion) {
         case 1:
-          nombre = leer.unString();
+          nombre = leerString();
           break;
         case 2:
-          genero = leer.unChar();
+          genero = leerChar();
           break;
         case 3:
-          telefono = leer.unString();
+          telefono = leerString();
           break;
         case 4:
-          correo = leer.unString();
+          correo = leerString();
           break;
         case 5:
-          direccion = leer.unString();
+          direccion = leerString();
           break;
         case 6:
-          rfc = leer.unString();
+          rfc = leerString();
           break;
         case 7:
-          fechaAdmision = leer.unString();
+          fechaAdmision = leerString();
           break;
         case 8:
-          fechaNacimiento = leer.unString();
+          fechaNacimiento = leerString();
           break;
         case 9:
-          nSeguroSocial = leer.unString();
+          nSeguroSocial = leerString();
           break;
         case 10:
-          personaContacto = leer.unString();
+          personaContacto = leerString();
           break;
         case 11:
-          departamento = leer.unString();
+          departamento = leerString();
           break;
         case 12:
-          posicion = leer.unString();
+          posicion = leerString();
           break;
         case 13:
-          salario = leer.unInt();
+          salario = leerInt();
           break;
       }
     }
@@ -123,30 +190,29 @@ public class Empleado extends Persona {
 
   @Override
   public void capturar() {
-    Leer leer = new Leer();
 
     super.capturar();
 
     System.out.print("Fecha de admision : ");
-    fechaAdmision = leer.unString();
+    fechaAdmision = leerString();
 
     System.out.print("Fecha de nacimiento : ");
-    fechaNacimiento = leer.unString();
+    fechaNacimiento = leerString();
 
     System.out.print("Número de seguro social : ");
-    nSeguroSocial = leer.unString();
+    nSeguroSocial = leerString();
 
     System.out.print("Persona de contacto : ");
-    personaContacto = leer.unString();
+    personaContacto = leerString();
 
     System.out.print("Departamento : ");
-    departamento = leer.unString();
+    departamento = leerString();
 
     System.out.print("Posición : ");
-    posicion = leer.unString();
+    posicion = leerString();
 
     System.out.print("Salario : ");
-    salario = leer.unFloat();
+    salario = leerFloat();
   }
 
   public boolean equals(String rfc) {

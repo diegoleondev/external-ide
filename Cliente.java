@@ -1,9 +1,9 @@
+import java.util.Random;
+import java.util.Scanner;
+
 public class Cliente extends Persona {
   private String identificador;
   private float puntos;
-
-  private Leer leer = new Leer();
-  private Id id = new Id();
 
   public Cliente() {
     super();
@@ -25,8 +25,90 @@ public class Cliente extends Persona {
   }
 
   private void inicializar() {
-    identificador = id.alfanumerico();
+    identificador = alfanumerico();
     puntos = 0f;
+  }
+
+  private String alfanumerico() {
+    Random ran = new Random();
+
+    char[] banco = { 'a', 'b', 'c', 'x', 'y' };
+    StringBuilder clave = new StringBuilder();
+
+    for (int i = 1; i <= 5; i++) {
+      char caracter = banco[ran.nextInt(5)];
+
+      clave.append(caracter);
+      clave.append(ran.nextInt(10));
+    }
+
+    return clave.toString();
+  }
+
+  private int leerInt() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        int valor = sc.nextInt();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private float leerFloat() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        float valor = sc.nextFloat();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número flotante : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private String leerString() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.nextLine();
+
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese una cadena de texto : ");
+      }
+    }
+  }
+
+  private char leerChar() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.next().charAt(0);
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un caracter : ");
+      }
+    }
+  }
+
+  private int leerIntEnRango(int opciones) {
+    while (true) {
+
+      int opcion = leerInt() - 1;
+      boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
+
+      if (range)
+        return opcion;
+
+      System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
+    }
   }
 
   @Override
@@ -50,7 +132,7 @@ public class Cliente extends Persona {
       System.out.println("\n1) Nombre 2) Género 3) Teléfono 4) Correo");
       System.out.println("5) Dirección 6) Puntos 0) Cancelar");
       System.out.print("Indique una opción : ");
-      int opcion = leer.unIntEnRango(6) + 1;
+      int opcion = leerIntEnRango(6) + 1;
 
       if (opcion == 0)
         return;
@@ -58,22 +140,22 @@ public class Cliente extends Persona {
       System.out.print("Introduzca el nuevo valor : ");
       switch (opcion) {
         case 1:
-          nombre = leer.unString();
+          nombre = leerString();
           break;
         case 2:
-          genero = leer.unChar();
+          genero = leerChar();
           break;
         case 3:
-          telefono = leer.unString();
+          telefono = leerString();
           break;
         case 4:
-          correo = leer.unString();
+          correo = leerString();
           break;
         case 5:
-          direccion = leer.unString();
+          direccion = leerString();
           break;
         case 6:
-          puntos = leer.unFloat();
+          puntos = leerFloat();
           break;
       }
     }

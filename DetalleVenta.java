@@ -1,11 +1,10 @@
 import java.io.Serializable;
+import java.util.Scanner;
 
 public class DetalleVenta implements Serializable {
   private int cantidad;
   private float precio;
   private Producto producto;
-
-  Leer leer = new Leer();
 
   public DetalleVenta(Producto producto) {
     this.producto = producto;
@@ -16,6 +15,21 @@ public class DetalleVenta implements Serializable {
 
   private void inicializar() {
     precio = producto.getPrecio();
+  }
+
+  private int leerInt() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        int valor = sc.nextInt();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+        sc.nextLine();
+      }
+    }
   }
 
   public float calcularTotal() {
@@ -32,7 +46,7 @@ public class DetalleVenta implements Serializable {
     System.out.print("Cantidad : ");
 
     while (true) {
-      int valor = leer.unInt();
+      int valor = leerInt();
 
       if (valor > producto.getStock()) {
         System.out.println("[~] No hay suficiente stock, ingrese una cantidad menor o igual a " + producto.getStock());

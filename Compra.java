@@ -1,9 +1,15 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 public class Compra implements Acciones, Serializable {
   private String folio;
@@ -12,9 +18,6 @@ public class Compra implements Acciones, Serializable {
   private Proveedor proveedor;
   private List<DetalleCompra> detalles = new ArrayList<DetalleCompra>();
   private boolean eliminada;
-
-  Leer leer = new Leer();
-  Archivo archivo = new Archivo();
 
   public Compra(Proveedor proveedor, List<DetalleCompra> detalles) {
     this.proveedor = proveedor;
@@ -34,10 +37,80 @@ public class Compra implements Acciones, Serializable {
     hora = formatoHora.format(date);
   }
 
-  private String crearFolio() {
-    String path = "./db/folioCompra.ponyfile";
+  private String[] getCadenas(String path) {
+    BufferedReader bReader = null;
 
-    String[] folio = archivo.getCadenas(path);
+    try {
+      FileReader file = new FileReader(path);
+      bReader = new BufferedReader(file);
+
+      List<String> lista = new ArrayList<String>();
+
+      String linea;
+
+      while ((linea = bReader.readLine()) != null)
+        lista.add(linea);
+
+      String[] areglo = new String[lista.size()];
+
+      lista.toArray(areglo);
+
+      return areglo;
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error, el archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error, no podemos leer el archivo. ");
+    } finally {
+      if (bReader == null)
+        return null;
+
+      try {
+        bReader.close();
+      } catch (Exception e) {
+        System.out.println("[!!] Ocurrió un error: no podemos cerrar el archivo : " + path);
+      }
+
+    }
+
+    return null;
+  };
+
+  private void setCadenas(String[] areglo, String path) {
+    BufferedWriter bWriter = null;
+
+    try {
+      FileWriter file = new FileWriter(path);
+      bWriter = new BufferedWriter(file);
+
+      for (String string : areglo) {
+        if (string == null)
+          break;
+        bWriter.write(string);
+        bWriter.newLine();
+      }
+
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error: El archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error: No podemos escribir el archivo : " + path);
+    } finally {
+      if (bWriter == null)
+        return;
+
+      try {
+        bWriter.close();
+      } catch (Exception e) {
+        System.out.println("[!!] Ocurrió un error: no pudimos cerrar el archivo : " + path);
+        System.out.println(e.getMessage());
+      }
+
+    }
+  }
+
+  private String crearFolio() {
+    String path = "db/folioCompra.ponyfile";
+
+    String[] folio = getCadenas(path);
 
     if (folio == null) {
       System.err.println("[!!] Error al leer el archivo:" + path);
@@ -48,7 +121,7 @@ public class Compra implements Acciones, Serializable {
 
     String[] nuevoFolio = { convertirFolio + 1 + "" };
 
-    archivo.setCadenas(nuevoFolio, path);
+    setCadenas(nuevoFolio, path);
 
     return nuevoFolio[0];
   }
@@ -70,10 +143,38 @@ public class Compra implements Acciones, Serializable {
     }
   }
 
+  private int leerInt() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        int valor = sc.nextInt();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private int leerIntEnRango(int opciones) {
+    while (true) {
+
+      int opcion = leerInt() - 1;
+      boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
+
+      if (range)
+        return opcion;
+
+      System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
+    }
+  }
+
   private DetalleCompra seleccionarDetalleCompra() {
     listarDetalleCompra();
     System.out.println("Seleccione un detalle de venta: ");
-    int valor = leer.unIntEnRango(detalles.size());
+    int valor = leerIntEnRango(detalles.size());
 
     if (valor == -1)
       return null;

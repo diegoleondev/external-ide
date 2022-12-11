@@ -1,5 +1,16 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Supermercado {
   private String nombre;
@@ -16,9 +27,6 @@ public class Supermercado {
   private String[] categorias = new String[500];
   private int cCategorias = 0;
 
-  Leer leer = new Leer();
-  Archivo archivo = new Archivo();
-
   public Supermercado(String nombre, String direccion) {
     this.nombre = nombre;
     this.direccion = direccion;
@@ -28,6 +36,46 @@ public class Supermercado {
 
   public void inicializar() {
     cargar();
+  }
+
+  private int leerInt() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        int valor = sc.nextInt();
+        sc.nextLine();
+
+        return valor;
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
+        sc.nextLine();
+      }
+    }
+  }
+
+  private String leerString() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.nextLine();
+
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese una cadena de texto : ");
+      }
+    }
+  }
+
+  private int leerIntEnRango(int opciones) {
+    while (true) {
+
+      int opcion = leerInt() - 1;
+      boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
+
+      if (range)
+        return opcion;
+
+      System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
+    }
   }
 
   private String[] filtrarCategorias() {
@@ -59,7 +107,7 @@ public class Supermercado {
     System.out.print("Indique la Categoría: ");
     int iCategoria;
 
-    while ((iCategoria = leer.unIntEnRango(categorias.length)) == -1) {
+    while ((iCategoria = leerIntEnRango(categorias.length)) == -1) {
       System.out.print("No puede dejar este campo vacío, vuelva a seleccionar : ");
     }
 
@@ -77,7 +125,7 @@ public class Supermercado {
   public void capturarCategoria() {
     System.out.println("\n[#] Capturar categoría");
     System.out.print("Ingrese el nombre de la categoría : ");
-    String categoria = leer.unString();
+    String categoria = leerString();
 
     categorias[cCategorias++] = categoria;
     System.out.println("[+] Categoría agregada. ");
@@ -86,7 +134,7 @@ public class Supermercado {
   public void buscarCategoria() {
     System.out.println("\n[#] Buscar categoría");
     System.out.println("Ingrese el valor a buscar : ");
-    String valor = leer.unString();
+    String valor = leerString();
 
     for (String categoria : filtrarCategorias()) {
       if (!categoria.equals(valor))
@@ -111,7 +159,7 @@ public class Supermercado {
         continue;
 
       System.out.print("Ingrese el nuevo nombre de la categoría : ");
-      String nuevoNombre = leer.unString();
+      String nuevoNombre = leerString();
 
       categorias[i] = nuevoNombre;
       System.out.println("[+] Categoría modificada. ");
@@ -204,7 +252,7 @@ public class Supermercado {
     }
     System.out.print("Indique el " + filtro + " : ");
 
-    int valor = leer.unIntEnRango(personasFiltradas.length);
+    int valor = leerIntEnRango(personasFiltradas.length);
 
     if (valor == -1)
       return null;
@@ -246,7 +294,7 @@ public class Supermercado {
   private void buscarPersona(String tipo) {
     System.out.println("\n[#] Buscar " + tipo);
     System.out.print("Ingrese valor a buscar : ");
-    String valor = leer.unString();
+    String valor = leerString();
 
     for (Persona persona : filtrarPersonas(tipo)) {
       if (!persona.buscar(valor))
@@ -384,7 +432,7 @@ public class Supermercado {
     System.out.println("2) Productos de una Categoría. ");
     System.out.println("0) Continuar.");
     System.out.print("Opción: ");
-    int opcionListado = leer.unIntEnRango(2);
+    int opcionListado = leerIntEnRango(2);
 
     if (opcionListado == -1)
       return null;
@@ -406,7 +454,7 @@ public class Supermercado {
       System.out.println("0.- Cancelar");
 
       System.out.print("Seleccione un producto : ");
-      int valor = leer.unIntEnRango(productosFiltrados.length);
+      int valor = leerIntEnRango(productosFiltrados.length);
 
       if (valor == -1)
         continue;
@@ -440,7 +488,7 @@ public class Supermercado {
   public void buscarProducto() {
     System.out.println("\n[#] Buscar Producto");
     System.out.print("Ingrese valor a buscar : ");
-    String valor = leer.unString();
+    String valor = leerString();
 
     for (Producto producto : filtrarProductosValidos()) {
       if (!producto.buscar(valor))
@@ -504,7 +552,7 @@ public class Supermercado {
     System.out.println("0.- Cancelar");
 
     System.out.print("Seleccione una venta : ");
-    int valor = leer.unIntEnRango(ventasFiltradas.length);
+    int valor = leerIntEnRango(ventasFiltradas.length);
 
     if (valor == -1)
       return null;
@@ -571,7 +619,7 @@ public class Supermercado {
   public void buscarVenta() {
     System.out.println("\n[#] Buscar Producto");
     System.out.print("Ingrese valor a buscar : ");
-    String valor = leer.unString();
+    String valor = leerString();
 
     for (Venta venta : filtrarVentasValidas()) {
       if (!venta.buscar(valor))
@@ -594,7 +642,7 @@ public class Supermercado {
       System.out.println("\nAtributos de la venta: ");
       System.out.println("1) Empleado 2) Cliente 3) Carrito 0) Cancelar");
       System.out.print("Seleccione una opción: ");
-      int opcion = leer.unIntEnRango(3);
+      int opcion = leerIntEnRango(3);
 
       if (opcion == -1)
         break;
@@ -618,7 +666,7 @@ public class Supermercado {
         case 2:
           System.out.println("1) Agregar 2) Remover 0.- Cancelar");
           System.out.print("Opción: ");
-          int opcion2 = leer.unIntEnRango(2);
+          int opcion2 = leerIntEnRango(2);
 
           if (opcion2 == -1)
             break;
@@ -690,7 +738,7 @@ public class Supermercado {
 
     listarCompras();
     System.out.print("Seleccione una compra: ");
-    int opcion = leer.unIntEnRango(compras.length);
+    int opcion = leerIntEnRango(compras.length);
 
     if (opcion == -1)
       return null;
@@ -739,7 +787,7 @@ public class Supermercado {
 
     System.out.println("¿Quieres imprimir la factura? 1) Si 2) No");
     System.out.print("Opción: ");
-    if (leer.unIntEnRango(2) == 0) {
+    if (leerIntEnRango(2) == 0) {
       System.out.println("\n[+] Imprimiendo factura...");
       compras[cCompras - 1].mostrar();
     }
@@ -748,7 +796,7 @@ public class Supermercado {
   public void buscarCompra() {
     System.out.println("\n[#] Buscar Compra");
     System.out.print("Ingrese valor a buscar: ");
-    String valor = leer.unString();
+    String valor = leerString();
 
     for (Compra compra : filtrarComprasValidas()) {
       if (!compra.buscar(valor))
@@ -772,7 +820,7 @@ public class Supermercado {
       System.out.println("\nAtributos de la compra: ");
       System.out.println("1) Proveedor 2) Carrito 0) Cancelar");
       System.out.print("Seleccione una opción: ");
-      int opcion = leer.unIntEnRango(2);
+      int opcion = leerIntEnRango(2);
 
       if (opcion == -1)
         break;
@@ -790,7 +838,7 @@ public class Supermercado {
         case 1:
           System.out.println("1) Agregar 2) Remover 0.- Cancelar");
           System.out.print("Opción: ");
-          int opcion2 = leer.unIntEnRango(2);
+          int opcion2 = leerIntEnRango(2);
 
           if (opcion2 == -1)
             break;
@@ -847,25 +895,161 @@ public class Supermercado {
     return arreglo;
   }
 
+  private void setObjetos(Object[] objetos, String path) {
+    ObjectOutputStream output = null;
+
+    try {
+      FileOutputStream fos = new FileOutputStream(path);
+      output = new ObjectOutputStream(fos);
+
+      for (Object objeto : objetos) {
+        if (objeto == null)
+          break;
+
+        output.writeObject(objeto);
+      }
+
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error, el archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error, no podemos escribir el archivo: " + path);
+    }
+
+    if (output == null)
+      return;
+
+    try {
+      output.close();
+    } catch (Exception e) {
+      System.out.println("[!!] Ocurrió un error, no podemos cerrar el archivo : " + path);
+    }
+
+  }
+
+  private Object[] getObjetos(String path) {
+    ObjectInputStream input = null;
+    List<Object> listaObjectos = new ArrayList<Object>();
+
+    try {
+      FileInputStream archivo = new FileInputStream(path);
+      input = new ObjectInputStream(archivo);
+
+      Object objecto;
+      while ((objecto = input.readObject()) != null)
+        listaObjectos.add(objecto);
+    } catch (EOFException e) {
+
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error: El archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error: No pudimos leer el archivo '" + path + "' .");
+    }
+
+    if (input == null)
+      return new Object[0];
+
+    try {
+      input.close();
+    } catch (Exception e) {
+      System.out.println("[!!] Ocurrió un error: no podemos cerrar el archivo : " + path);
+    }
+
+    Object[] arregloObjectos = new Object[listaObjectos.size()];
+
+    listaObjectos.toArray(arregloObjectos);
+
+    return arregloObjectos;
+  };
+
+  private String[] getCadenas(String path) {
+    BufferedReader bReader = null;
+
+    try {
+      FileReader file = new FileReader(path);
+      bReader = new BufferedReader(file);
+
+      List<String> lista = new ArrayList<String>();
+
+      String linea;
+
+      while ((linea = bReader.readLine()) != null)
+        lista.add(linea);
+
+      String[] areglo = new String[lista.size()];
+
+      lista.toArray(areglo);
+
+      return areglo;
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error, el archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error, no podemos leer el archivo. ");
+    } finally {
+      if (bReader == null)
+        return null;
+
+      try {
+        bReader.close();
+      } catch (Exception e) {
+        System.out.println("[!!] Ocurrió un error: no podemos cerrar el archivo : " + path);
+      }
+
+    }
+
+    return null;
+  };
+
+  private void setCadenas(String[] areglo, String path) {
+    BufferedWriter bWriter = null;
+
+    try {
+      FileWriter file = new FileWriter(path);
+      bWriter = new BufferedWriter(file);
+
+      for (String string : areglo) {
+        if (string == null)
+          break;
+        bWriter.write(string);
+        bWriter.newLine();
+      }
+
+    } catch (FileNotFoundException e) {
+      System.out.println("[!!] Ocurrió un error: El archivo '" + path + "' no existe. ");
+    } catch (Exception e) {
+      System.err.println("[!!] Ocurrió un error: No podemos escribir el archivo : " + path);
+    } finally {
+      if (bWriter == null)
+        return;
+
+      try {
+        bWriter.close();
+      } catch (Exception e) {
+        System.out.println("[!!] Ocurrió un error: no pudimos cerrar el archivo : " + path);
+        System.out.println(e.getMessage());
+      }
+
+    }
+  }
+
   public void guardar() {
-    archivo.setObjetos(filtrarPersonas(), "./db/personas.ponyfile");
-    archivo.setObjetos(filtrarProductosValidos(), "./db/productos.ponyfile");
-    archivo.setObjetos(filtrarVentasValidas(), "./db/ventas.ponyfile");
-    archivo.setObjetos(filtrarComprasValidas(), "./db/compras.ponyfile");
-    archivo.setCadenas(filtrarCategorias(), "./db/categorias.ponyfile");
+    setObjetos(filtrarPersonas(), "db/personas.ponyfile");
+    setObjetos(filtrarProductosValidos(), "db/productos.ponyfile");
+    setObjetos(filtrarVentasValidas(), "db/ventas.ponyfile");
+    setObjetos(filtrarComprasValidas(), "db/compras.ponyfile");
+    setCadenas(filtrarCategorias(), "db/categorias.ponyfile");
     System.out.println("[+] Información guardada");
   }
 
   private void cargar() {
-    for (Object obj : archivo.getObjetos("./db/personas.ponyfile"))
+    for (Object obj : getObjetos("db/personas.ponyfile"))
       personas[cPersonas++] = (Persona) obj;
-    for (Object obj : archivo.getObjetos("./db/productos.ponyfile"))
+    for (Object obj : getObjetos("db/productos.ponyfile"))
       productos[cProductos++] = (Producto) obj;
-    for (Object obj : archivo.getObjetos("./db/ventas.ponyfile"))
+    for (Object obj : getObjetos("db/ventas.ponyfile"))
       ventas[cVentas++] = (Venta) obj;
-    for (Object obj : archivo.getObjetos("./db/compras.ponyfile"))
+    for (Object obj : getObjetos("db/compras.ponyfile"))
       compras[cCompras++] = (Compra) obj;
-    for (String categoria : archivo.getCadenas("./db/categorias.ponyfile"))
+    for (String categoria : getCadenas("db/categorias.ponyfile"))
       categorias[cCategorias++] = categoria;
     System.out.println("[+] Información cargada");
   }

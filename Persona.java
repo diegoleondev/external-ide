@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.Scanner;
 
 public class Persona implements Acciones, Serializable {
   protected String nombre;
@@ -8,8 +9,6 @@ public class Persona implements Acciones, Serializable {
   protected String correo;
   protected String direccion;
   protected boolean eliminada = false;
-
-  private Leer leer = new Leer();
 
   public Persona() {
     capturar();
@@ -38,24 +37,47 @@ public class Persona implements Acciones, Serializable {
     return (nombre + rfc + genero + telefono + correo + direccion + eliminada).indexOf(s) != -1 ? true : false;
   };
 
+  private String leerString() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.nextLine();
+
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese una cadena de texto : ");
+      }
+    }
+  }
+
+  private char leerChar() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+      try {
+        return sc.next().charAt(0);
+      } catch (Exception e) {
+        System.err.print("[!] Ocurrió un error, ingrese un caracter : ");
+      }
+    }
+  }
+
   public void capturar() {
     System.out.print("Nombre : ");
-    nombre = leer.unString();
+    nombre = leerString();
 
     System.out.print("RFC : ");
-    rfc = leer.unString();
+    rfc = leerString();
 
     System.out.print("Género : ");
-    genero = leer.unChar();
+    genero = leerChar();
 
     System.out.print("Teléfono : ");
-    telefono = leer.unString();
+    telefono = leerString();
 
     System.out.print("Correo : ");
-    correo = leer.unString();
+    correo = leerString();
 
     System.out.print("Dirección : ");
-    direccion = leer.unString();
+    direccion = leerString();
   };
 
   public void eliminar() {
