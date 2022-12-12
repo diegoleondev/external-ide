@@ -21,57 +21,6 @@ public class Proveedor extends Persona {
     this.nombreComercial = nombreComercial;
   }
 
-  private int leerInt() {
-    Scanner sc = new Scanner(System.in);
-    while (true) {
-      try {
-        int valor = sc.nextInt();
-        sc.nextLine();
-
-        return valor;
-      } catch (Exception e) {
-        System.err.print("[!] Ocurrió un error, ingrese un número entero : ");
-        sc.nextLine();
-      }
-    }
-  }
-
-  private String leerString() {
-    Scanner sc = new Scanner(System.in);
-    while (true) {
-      try {
-        return sc.nextLine();
-
-      } catch (Exception e) {
-        System.err.print("[!] Ocurrió un error, ingrese una cadena de texto : ");
-      }
-    }
-  }
-
-  private char leerChar() {
-    Scanner sc = new Scanner(System.in);
-    while (true) {
-      try {
-        return sc.next().charAt(0);
-      } catch (Exception e) {
-        System.err.print("[!] Ocurrió un error, ingrese un caracter : ");
-      }
-    }
-  }
-
-  private int leerIntEnRango(int opciones) {
-    while (true) {
-
-      int opcion = leerInt() - 1;
-      boolean range = (opcion == -1 || (opcion >= 0 && opcion < opciones));
-
-      if (range)
-        return opcion;
-
-      System.err.print("[!] Opción fuera de rango, vuelva a seleccionar : ");
-    }
-  }
-
   @Override
   public void mostrar() {
     super.mostrar();
@@ -143,7 +92,7 @@ public class Proveedor extends Persona {
   }
 
   public String toString() {
-    return nombre;
+    return nombreComercial;
   }
 
   @Override

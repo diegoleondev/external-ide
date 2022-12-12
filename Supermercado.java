@@ -133,11 +133,11 @@ public class Supermercado {
 
   public void buscarCategoria() {
     System.out.println("\n[#] Buscar categoría");
-    System.out.println("Ingrese el valor a buscar : ");
+    System.out.print("Ingrese el valor a buscar : ");
     String valor = leerString();
 
     for (String categoria : filtrarCategorias()) {
-      if (!categoria.equals(valor))
+      if (categoria.indexOf(valor) == -1 )
         continue;
 
       System.out.println(categoria);

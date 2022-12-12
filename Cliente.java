@@ -130,9 +130,9 @@ public class Cliente extends Persona {
   public void modificar() {
     while (true) {
       System.out.println("\n1) Nombre 2) Género 3) Teléfono 4) Correo");
-      System.out.println("5) Dirección 6) Puntos 0) Cancelar");
+      System.out.println("5) Dirección 6) Puntos 7) RFC 0) Cancelar");
       System.out.print("Indique una opción : ");
-      int opcion = leerIntEnRango(6) + 1;
+      int opcion = leerIntEnRango(7) + 1;
 
       if (opcion == 0)
         return;
@@ -157,6 +157,9 @@ public class Cliente extends Persona {
         case 6:
           puntos = leerFloat();
           break;
+		case 7:
+		  rfc = leerString();
+		  break;
       }
     }
   }
